@@ -124,3 +124,6 @@ library(ggplot2)
 qplot(interval,steps,data=averagesteps.weekpart, geom="line", color=weekpart)
 ```
 
+~~~~
+Josh Blacksher
+~~~~

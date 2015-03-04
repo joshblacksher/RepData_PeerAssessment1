@@ -239,3 +239,6 @@ qplot(interval,steps,data=averagesteps.weekpart, geom="line", color=weekpart)
 
 ![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
+~~~~
+Josh Blacksher
+~~~~
