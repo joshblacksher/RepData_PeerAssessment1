@@ -6,20 +6,105 @@ output:
 ---
 
 
+
 ## Loading and preprocessing the data
+**Not Shown: **Before I began, I unziped the activity.zip file into ./data/activity.csv  
+Next, read the data in  
+And, convert the date strings to date types  
+
+```{r}
+thedata <- read.csv("./data/activity.csv", na.strings="NA")
+thedata$date <- as.Date(as.character(thedata$date))
+str(thedata)
+```
 
 
 
 ## What is mean total number of steps taken per day?
+Sum the steps by day  
+Then, take a quick look  
+And, the mean and median  
+
+```{r}
+totalsteps <- aggregate(steps ~ date, data=thedata, sum)
+totalsteps 
+hist(totalsteps$steps)
+summary(totalsteps$steps)
+```
 
 
 
 ## What is the average daily activity pattern?
+Take the mean of steps by interval  
+Then, plot them  
+And see which interval has the highest average  
+
+```{r}
+averagesteps <- aggregate(steps ~ interval, data=thedata, FUN="mean")
+plot(averagesteps, type="l")
+averagesteps[averagesteps$steps==max(averagesteps$steps),]
+```
+
+Interval number `r averagesteps[averagesteps$steps==max(averagesteps$steps),]$interval` has the highest average steps, at `r averagesteps[averagesteps$steps==max(averagesteps$steps),]$steps`!
 
 
 
 ## Imputing missing values
+There are `r sum(is.na(thedata$steps))` missing values in the steps column.  
+There are `r sum(is.na(thedata$date))` missing values in the date column.  
+There are `r sum(is.na(thedata$interval))` missing values in the interval column.  
+
+Next we'll take a copy of the data   
+And, replace the NA steps counts with the average for that interval for all days  
+
+```{r}
+thedata.nona <- thedata
+
+thedata.nona$steps <- apply(thedata.nona, 1, function(x) { 
+  if(is.na(x[1])) { subset(averagesteps,interval==as.integer(x[3]))[1,2] } 
+  else { as.integer(x[1]) }
+})
+
+str(thedata.nona)
+```
+
+Let's look at the histograms side by side  
+
+```{r}
+totalsteps.nona <- aggregate(steps ~ date, data=thedata.nona, sum)
+
+par(mfcol=c(1,2))
+hist(totalsteps$steps)
+hist(totalsteps.nona$steps)
+```
+
+And the summaries  
+
+```{r}
+summary(totalsteps$steps)
+summary(totalsteps.nona$steps)
+```
+
+Imputing the missing value by using the interval mean seems to have had a minimal impact on the median and mean values for the average daily totals.
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Let's add a weekday factor  
+Then a weekend factor  
+
+```{r}
+thedata.nona$weekday <- as.factor(weekdays(thedata.nona$date))
+thedata.nona$weekpart <- as.factor(thedata.nona$weekday %in% c("Saturday", "Sunday"))
+levels(thedata.nona$weekpart) <- c("Weekday","Weekend")
+```
+
+Now take the mean for weekdays and weekend  
+And graph the two  
+
+```{r}
+averagesteps.weekpart <- aggregate(steps ~ interval+weekpart, data=thedata.nona,FUN="mean")
+library(ggplot2)
+qplot(interval,steps,data=averagesteps.weekpart, geom="line", color=weekpart)
+```
+
