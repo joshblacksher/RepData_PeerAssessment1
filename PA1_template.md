@@ -7,7 +7,6 @@
 Next, read the data in  
 And, convert the date strings to date types  
 
-### Code for reading in the dataset and/or processing the data
 
 ```r
 thedata <- read.csv("./data/activity.csv", na.strings="NA")
@@ -92,15 +91,11 @@ totalsteps
 ## 53 2012-11-29  7047
 ```
 
-### A histogram of the total number of steps taken each day
-
 ```r
 hist(totalsteps$steps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
-
-### Both the mean and median number of steps taken each day
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ```r
 summary(totalsteps$steps)
@@ -115,13 +110,19 @@ summary(totalsteps$steps)
 
 ## What is the average daily activity pattern?
 Take the mean of steps by interval  
-And see which interval has the highest average  
 Then, plot them  
+And see which interval has the highest average  
 
 
 ```r
 averagesteps <- aggregate(steps ~ interval, data=thedata, FUN="mean")
-averagesteps[averagesteps$steps==max(averagesteps$steps),] # get the entry at max
+plot(averagesteps, type="l")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
+averagesteps[averagesteps$steps==max(averagesteps$steps),]
 ```
 
 ```
@@ -129,16 +130,8 @@ averagesteps[averagesteps$steps==max(averagesteps$steps),] # get the entry at ma
 ## 104      835 206.1698
 ```
 
-### A time series plot of the average number of steps taken (averaged across all days) versus the 5-minute intervals
-
-```r
-plot(averagesteps, type="l")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
-
-###  The 5-minute interval that, on average, contains the maximum number of steps
 Interval number 835 has the highest average steps, at 206.1698113!
+
 
 
 ## Imputing missing values
@@ -146,7 +139,6 @@ There are 2304 missing values in the steps column.
 There are 0 missing values in the date column.  
 There are 0 missing values in the interval column.  
 
-### Describe and show with code a strategy for imputing missing data
 Next we'll take a copy of the data   
 And, replace the NA steps counts with the average for that interval for all days  
 
@@ -171,7 +163,6 @@ str(thedata.nona)
 
 Let's look at the histograms side by side  
 
-### A histogram of the total number of steps taken each day after missing values were imputed
 
 ```r
 totalsteps.nona <- aggregate(steps ~ date, data=thedata.nona, sum)
@@ -181,7 +172,7 @@ hist(totalsteps$steps)
 hist(totalsteps.nona$steps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 And the summaries  
 
@@ -222,7 +213,6 @@ levels(thedata.nona$weekpart) <- c("Weekday","Weekend")
 Now take the mean for weekdays and weekend  
 And graph the two  
 
-### Plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
 ```r
 averagesteps.weekpart <- aggregate(steps ~ interval+weekpart, data=thedata.nona,FUN="mean")
@@ -237,5 +227,5 @@ library(ggplot2)
 qplot(interval,steps,data=averagesteps.weekpart, geom="line", color=weekpart)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 

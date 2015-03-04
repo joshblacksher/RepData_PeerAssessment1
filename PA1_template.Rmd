@@ -12,7 +12,6 @@ output:
 Next, read the data in  
 And, convert the date strings to date types  
 
-### Code for reading in the dataset and/or processing the data
 ```{r}
 thedata <- read.csv("./data/activity.csv", na.strings="NA")
 thedata$date <- as.Date(as.character(thedata$date))
@@ -29,15 +28,7 @@ And, the mean and median
 ```{r}
 totalsteps <- aggregate(steps ~ date, data=thedata, sum)
 totalsteps 
-```
-
-### A histogram of the total number of steps taken each day
-```{r}
 hist(totalsteps$steps)
-```
-
-### Both the mean and median number of steps taken each day
-```{r}
 summary(totalsteps$steps)
 ```
 
@@ -45,21 +36,17 @@ summary(totalsteps$steps)
 
 ## What is the average daily activity pattern?
 Take the mean of steps by interval  
-And see which interval has the highest average  
 Then, plot them  
+And see which interval has the highest average  
 
 ```{r}
 averagesteps <- aggregate(steps ~ interval, data=thedata, FUN="mean")
-averagesteps[averagesteps$steps==max(averagesteps$steps),] # get the entry at max
-```
-
-### A time series plot of the average number of steps taken (averaged across all days) versus the 5-minute intervals
-```{r}
 plot(averagesteps, type="l")
+averagesteps[averagesteps$steps==max(averagesteps$steps),]
 ```
 
-###  The 5-minute interval that, on average, contains the maximum number of steps
 Interval number `r averagesteps[averagesteps$steps==max(averagesteps$steps),]$interval` has the highest average steps, at `r averagesteps[averagesteps$steps==max(averagesteps$steps),]$steps`!
+
 
 
 ## Imputing missing values
@@ -67,7 +54,6 @@ There are `r sum(is.na(thedata$steps))` missing values in the steps column.
 There are `r sum(is.na(thedata$date))` missing values in the date column.  
 There are `r sum(is.na(thedata$interval))` missing values in the interval column.  
 
-### Describe and show with code a strategy for imputing missing data
 Next we'll take a copy of the data   
 And, replace the NA steps counts with the average for that interval for all days  
 
@@ -84,7 +70,6 @@ str(thedata.nona)
 
 Let's look at the histograms side by side  
 
-### A histogram of the total number of steps taken each day after missing values were imputed
 ```{r}
 totalsteps.nona <- aggregate(steps ~ date, data=thedata.nona, sum)
 
@@ -117,7 +102,6 @@ levels(thedata.nona$weekpart) <- c("Weekday","Weekend")
 Now take the mean for weekdays and weekend  
 And graph the two  
 
-### Plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 ```{r}
 averagesteps.weekpart <- aggregate(steps ~ interval+weekpart, data=thedata.nona,FUN="mean")
 library(ggplot2)
